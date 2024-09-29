@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	DBDriver string `default:"postgres" mapstructure:"DB_DRIVER"`
-	DBSource string `default:"postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" mapstructure:"DB_SOURCE"`
-	ServerAddress string `default:":8080" mapstructure:"SERVER_ADDRESS"`
-	TokenSymmetricKey string `default:"secret" mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	DBDriver            string        `default:"postgres" mapstructure:"DB_DRIVER"`
+	DBSource            string        `default:"postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" mapstructure:"DB_SOURCE"`
+	ServerAddress       string        `default:":8080" mapstructure:"SERVER_ADDRESS"`
+	TokenSymmetricKey   string        `default:"secret" mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AccessTokenDuration time.Duration `default:"1h" mapstructure:"ACCESS_TOKEN_DURATION"`
 }
 
@@ -27,6 +27,6 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	err = viper.Unmarshal(&config)
-	return 
+	return
 
 }

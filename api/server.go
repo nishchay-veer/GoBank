@@ -12,25 +12,26 @@ import (
 )
 
 type Server struct {
-	config util.Config
-	store db.Store
+	config     util.Config
+	store      db.Store
 	tokenMaker token.Maker
-	router *gin.Engine
+	router     *gin.Engine
 }
 
-func NewServer(config util.Config , store db.Store) (*Server, error) {
+func NewServer(config util.Config, store db.Store) (*Server, error) {
 	tokenMaker, err := token.NewPASETOMaker(config.TokenSymmetricKey)
 	if err != nil {
 		log.Fatal("cannot create token maker")
 	}
 
 	server := &Server{
-		tokenMaker: tokenMaker, 
-		store: store,
-		config: config,
+		tokenMaker: tokenMaker,
+		store:      store,
+		config:     config,
 	}
-	
-	v, ok:= binding.Validator.Engine().(*validator.Validate); if ok {
+
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+	if ok {
 		v.RegisterValidation("currency", validCurrency)
 	}
 
@@ -43,6 +44,7 @@ func (server *Server) setupRouter() {
 
 	router.POST("/users/login", server.loginUser)
 	router.POST("/users", server.createUser)
+	router.POST("/token/renew_access", server.renewAccessToken)
 
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authRoutes.POST("/accounts", server.createAccount)
@@ -50,8 +52,7 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/accounts", server.listAccounts)
 
 	authRoutes.POST("/transfers", server.createTranser)
-	
-	
+
 	server.router = router
 }
 

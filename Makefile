@@ -31,4 +31,19 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/nishchay-veer/simplebank/db/sqlc Store
 
-.PHONY: postgres createdb dropdb sqlc test migrateup migratedown server mock
+proto:
+	rm -f pb/*.go
+	rm -f doc/swagger/*
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	--openapiv2_out=doc/swagger \
+	--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
+	proto/*.proto
+
+evans:
+	evans --host localhost --port 5000 -r repl --package pb --service SimpleBank
+
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
+	
+.PHONY: postgres createdb dropdb sqlc test migrateup migratedown server mock proto migrateup1 migratedown1 proto evans
